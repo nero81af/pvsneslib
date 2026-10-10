@@ -49,10 +49,35 @@ tcc__registers_nmi_isr dsb 48
 
 .ENDS
 
+.ifdef EXHIROM
+; ExHiROM: the CPU fetches the vectors from bank $00, which is file bank 64
+; ($408000-$40FFFF), not file bank 0. The handlers the vectors name live here
+; and jump to the real code in banks $C0+ (file banks 0-63).
+.BANK 64
+.BASE $00
+
+.SECTION "ExHiROMVectors" SEMIFREE ORG $8000
+
+EmptyHandler:
+       rti
+
+tcc__start:
+    sei
+    clc
+    xce
+    jml fast_start
+
+.ENDS
+.endif
+
 .BANK 0                                 ; Defines the ROM bank and the slot it is inserted in memory.
 
+.ifdef EXHIROM
+.BASE $C0
+.else
 .ifdef FASTROM
 .BASE $80
+.endif
 .endif
 
 .DEFINE ORG_0 0
@@ -66,8 +91,10 @@ tcc__registers_nmi_isr dsb 48
 
 .SECTION "EmptyVectors" SEMIFREE ORG ORG_0
 
+.ifndef EXHIROM
 EmptyHandler:
        rti
+.endif
 
 EmptyNMI:
        rtl
@@ -230,6 +257,9 @@ tcc__snesinit:
 .index 16
 .16bit
 
+.ifdef EXHIROM
+fast_start:
+.else
 tcc__start:
     ; Initialize the SNES.
     sei             ; Disabled interrupts
@@ -239,6 +269,7 @@ tcc__start:
     jml fast_start
 
 fast_start:
+.endif
 .endif
     rep     #$18    ; Binary mode (decimal mode off), X/Y 16 bit
     ldx     #$1FFF  ; set stack to $1FFF

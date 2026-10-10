@@ -24,7 +24,9 @@ export SNESOBJS = crt0_snes.obj libm.obj libtcc.obj libc.obj
 %.ps: %.c
 	@echo $(notdir $<)
 
-ifeq ($(HIROM),1)
+ifeq ($(EXHIROM),1)
+	$(CC) $(CFLAGS) -Wall -c $< -H -F -o $@
+else ifeq ($(HIROM),1)
 ifeq ($(FASTROM),1)
 	$(CC) $(CFLAGS) -Wall -c $< -H -F -o $@
 else
@@ -41,6 +43,12 @@ endif
 
 reset_comp:
 	@echo "; HIROM / FASTROM definitions" > comp_defs.asm
+ifeq ($(EXHIROM),1)
+	@echo ".DEFINE EXHIROM 1" >> comp_defs.asm
+	@echo ".DEFINE HIROM 1" >> comp_defs.asm
+	@echo ".FASTROM" >> comp_defs.asm
+	@echo ".DEFINE FASTROM 1" >> comp_defs.asm
+else
 ifeq ($(HIROM),1)
 	@echo ".DEFINE HIROM 1" >> comp_defs.asm
 endif
@@ -50,9 +58,12 @@ ifeq ($(FASTROM),1)
 else
 	@echo ".SLOWROM" >> comp_defs.asm
 endif
+endif
 
 all: reset_comp $(SNESOBJS)
-ifeq ($(HIROM),1)
+ifeq ($(EXHIROM),1)
+	@mv *.obj ../lib/ExHiROM_FastROM
+else ifeq ($(HIROM),1)
 ifeq ($(FASTROM),1)
 	@mv *.obj ../lib/HiROM_FastROM
 else

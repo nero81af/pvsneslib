@@ -28,12 +28,19 @@
 .EQU REG_STAT78             $213F
 .EQU REG_DEBUG              $21FC
 
+.ifdef EXHIROM
+; ExHiROM boards (SHVC-LJ3M) decode SRAM at $80-$BF:6000; flash carts and
+; emulators also at $A0-$BF: $B0 is in both.
+.EQU BANK_SRAM              $B0
+.EQU OFFSET_SRAM            $6000
+.else
 .ifdef HIROM
 .EQU BANK_SRAM              $30
 .EQU OFFSET_SRAM            $6000
 .else
 .EQU BANK_SRAM              $70
 .EQU OFFSET_SRAM            $0
+.endif
 .endif
 .EQU PPU_50HZ               (1<<4)
 

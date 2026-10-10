@@ -26,6 +26,8 @@ release: lib
 			$(MAKE) KEEP_LIB=1 clean; \
 		) \
 	)
+	$(MAKE) EXHIROM=1 build
+	$(MAKE) KEEP_LIB=1 clean
 
 build:
 	@$(MAKE) -C source all
@@ -36,6 +38,7 @@ lib:
 	@mkdir -p $@/LoROM_FastROM
 	@mkdir -p $@/HiROM_SlowROM
 	@mkdir -p $@/HiROM_FastROM
+	@mkdir -p $@/ExHiROM_FastROM
 
 clean:
 	$(MAKE) -C source clean

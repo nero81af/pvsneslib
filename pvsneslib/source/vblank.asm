@@ -38,6 +38,15 @@ snes_vblank_count       dsb 2  ; Incremented every VBlank interrupt
 .ENDS
 
 
+.ifdef EXHIROM
+; ExHiROM: the NMI vector reads bank $00, which is file bank 64; jump from
+; there to the ISR in file bank 0.
+.SECTION ".vblank_vector" SEMIFREE ORGA $8000 BASE $00 BANK 64
+VBlank:
+  jml FVBlank
+.ENDS
+.endif
+
 ; Needed to ensure VBlank ISR is in bank zero so the 65816 can access it when a NMI interrupt occurs.
 .BASE BASE_0
 .SECTION ".vblank_isr" SEMIFREE ORGA $8000 BASE BASE_0 BANK 0
@@ -627,11 +636,15 @@ _MouseData:
 
 ;; Vertical Blank Interrupt Service Routine (NMI ISR)
 ;;
+.ifdef EXHIROM
+FVBlank:
+.else
 VBlank:
 .ifdef FASTROM
   jml FVBlank
 
 FVBlank:
+.endif
 .endif
 
 	rep    #$38                 ; 16 bit A, 16 bit I, decimal mode disabled

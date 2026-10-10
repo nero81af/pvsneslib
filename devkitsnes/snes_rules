@@ -16,7 +16,12 @@ DEBUG = 0
 $(info The debug mode is NOT enabled, you can do it by executing "export PVSNESLIB_DEBUG=1")
 endif
 
-ifeq ($(HIROM),1)
+ifeq ($(EXHIROM),1)
+HIROM = 1
+FASTROM = 1
+$(info ExHiROM compilation is enabled)
+LIBDIRSOBJS := $(PVSNESLIB_HOME)/pvsneslib/lib/ExHiROM_FastROM
+else ifeq ($(HIROM),1)
 HIROM = 1
 $(info HiROM compilation is enabled)
 ifeq ($(FASTROM),1)

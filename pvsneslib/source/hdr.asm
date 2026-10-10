@@ -53,4 +53,8 @@
 
 .endif
 
+.ifdef EXHIROM
+.ROMBANKS 96                    ; ExHiROM: 6 MB, the boot stubs live in bank 64 ($00:8000)
+.else
 .ROMBANKS 2                     ; Tell WLA we want to use 2 ROM Banks
+.endif
